@@ -8,10 +8,12 @@
 import SwiftUI
 
 @main
-struct stack_copyApp: App {
+struct ClipStackApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        Settings {
+            EmptyView()
         }
     }
 }
