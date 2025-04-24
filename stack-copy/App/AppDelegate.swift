@@ -23,14 +23,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Register keyboard shortcuts
         registerShortcuts()
         
-        // Request permissions if needed
         requestAccessibilityPermissions()
     }
     
     func setupStatusBarItem() {
         statusBarItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = statusBarItem.button {
-            button.image = NSImage(systemSymbolName: "clipboard", accessibilityDescription: "ClipStack")
+            button.image = NSImage(systemSymbolName: "clipboard", accessibilityDescription: "stack-copy")
         }
         
         let menu = NSMenu()
@@ -54,7 +53,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func registerShortcuts() {
-        // Setup keyboard shortcuts
         KeyboardShortcuts.onKeyDown(for: .stackCopy) { [weak self] in
             self?.clipboardManager.copyToStack()
         }
@@ -73,10 +71,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let accessEnabled = AXIsProcessTrustedWithOptions(options)
         
         if !accessEnabled {
-            // Show dialog explaining why accessibility permissions are needed
             let alert = NSAlert()
             alert.messageText = "Accessibility Permissions Required"
-            alert.informativeText = "ClipStack needs accessibility permissions to detect keyboard shortcuts."
+            alert.informativeText = "stack-copy needs accessibility permissions to detect keyboard shortcuts."
             alert.runModal()
         }
     }
