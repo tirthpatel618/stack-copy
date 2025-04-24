@@ -9,6 +9,7 @@
 import Cocoa
 import SwiftUI
 import Combine
+import UserNotifications
 
 class ClipboardManager: ObservableObject {
     static let shared = ClipboardManager()
@@ -188,9 +189,22 @@ class ClipboardManager: ObservableObject {
     
     // Display notification when stack is full
     private func showStackFullNotification() {
-        let notification = NSUserNotification()
-        notification.title = Constants.Notifications.stackFullTitle
-        notification.informativeText = Constants.Notifications.stackFullMessage
-        NSUserNotificationCenter.default.deliver(notification)
+        let content = UNMutableNotificationContent()
+        content.title = Constants.Notifications.stackFullTitle
+        content.body = Constants.Notifications.stackFullMessage
+        
+        // Create a request with immediate trigger
+        let request = UNNotificationRequest(
+            identifier: UUID().uuidString,
+            content: content,
+            trigger: nil 
+        )
+        
+        // Add request to notification center
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Error displaying notification: \(error)")
+            }
+        }
     }
 }

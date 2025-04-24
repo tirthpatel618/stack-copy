@@ -34,9 +34,8 @@ class PopupManager {
         popupWindow.level = .popUpMenu
         
         // Position at mouse location
-        if let mouseLocation = NSEvent.mouseLocation {
-            popupWindow.setFrameOrigin(NSPoint(x: mouseLocation.x - 150, y: mouseLocation.y - 20))
-        }
+        let mouseLocation = NSEvent.mouseLocation
+        popupWindow.setFrameOrigin(NSPoint(x: mouseLocation.x - 150, y: mouseLocation.y - 20))
         
         // Create and set content view
         let contentView = ClipboardPopupView(items: items, mode: mode) { [weak self] index in

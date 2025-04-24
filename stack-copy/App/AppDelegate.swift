@@ -8,8 +8,9 @@
 import Cocoa
 import SwiftUI
 import KeyboardShortcuts
+import UserNotifications
 
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
     var statusBarItem: NSStatusItem!
     let clipboardManager = ClipboardManager.shared
     
@@ -23,7 +24,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Register keyboard shortcuts
         registerShortcuts()
         
+        // Request permissions
         requestAccessibilityPermissions()
+        
+        // Setup notification delegate and request permission
+        UNUserNotificationCenter.current().delegate = self
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
+            if granted {
+                print("Notification permission granted")
+            } else if let error = error {
+                print("Failed to request notification permission: \(error)")
+            }
+        }
     }
     
     func setupStatusBarItem() {
@@ -76,5 +88,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             alert.informativeText = "stack-copy needs accessibility permissions to detect keyboard shortcuts."
             alert.runModal()
         }
+    }
+    
+    // Optional: Handle notification presentation
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // Display alert even when app is in foreground
+        completionHandler([.banner, .sound])
     }
 }
