@@ -21,7 +21,7 @@ class PopupManager {
         self.completionHandler = completion
         
         // Create popup window
-        let popupWindow = NSWindow(
+        let popupWindow = PopupWindow(
             contentRect: NSRect(x: 0, y: 0, width: 300, height: min(50 * items.count + (mode == .delete ? 50 : 0), 400)),
             styleMask: [.borderless],
             backing: .buffered,
@@ -33,9 +33,17 @@ class PopupManager {
         popupWindow.hasShadow = true
         popupWindow.level = .popUpMenu
         
-        // Position at mouse location
-        let mouseLocation = NSEvent.mouseLocation
-        popupWindow.setFrameOrigin(NSPoint(x: mouseLocation.x - 150, y: mouseLocation.y - 20))
+        // Get front-most window and position relative to it
+        if let frontWindow = NSApp.keyWindow ?? NSApp.mainWindow {
+            let windowFrame = frontWindow.frame
+            let centerX = windowFrame.midX
+            let centerY = windowFrame.midY
+            popupWindow.setFrameOrigin(NSPoint(x: centerX - 150, y: centerY - 200))
+        } else {
+            // Fallback to mouse position if no active window
+            let mouseLocation = NSEvent.mouseLocation
+            popupWindow.setFrameOrigin(NSPoint(x: mouseLocation.x - 150, y: mouseLocation.y - 20))
+        }
         
         // Create and set content view
         let contentView = ClipboardPopupView(items: items, mode: mode) { [weak self] index in
@@ -43,6 +51,7 @@ class PopupManager {
         }
         
         popupWindow.contentView = NSHostingView(rootView: contentView)
+        
         popupWindow.makeKeyAndOrderFront(nil)
         
         // Setup event monitor to dismiss on other key presses
@@ -81,9 +90,11 @@ class PopupManager {
         
         popupWindow?.close()
         popupWindow = nil
-        completionHandler?(index)
-        completionHandler = nil
+        
+        // Small delay to ensure window is fully dismissed before callback
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            self.completionHandler?(index)
+            self.completionHandler = nil
+        }
     }
 }
-
-

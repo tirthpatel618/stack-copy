@@ -65,17 +65,24 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
     
     func registerShortcuts() {
+        print("DEBUG: Registering keyboard shortcuts")
+        
         KeyboardShortcuts.onKeyDown(for: .stackCopy) { [weak self] in
+            print("DEBUG: stackCopy shortcut triggered")
             self?.clipboardManager.copyToStack()
         }
         
         KeyboardShortcuts.onKeyDown(for: .stackPaste) { [weak self] in
+            print("DEBUG: stackPaste shortcut triggered")
             self?.clipboardManager.showPastePopup()
         }
         
         KeyboardShortcuts.onKeyDown(for: .stackDelete) { [weak self] in
+            print("DEBUG: stackDelete shortcut triggered")
             self?.clipboardManager.showDeletePopup()
         }
+        
+        print("DEBUG: Keyboard shortcuts registered successfully")
     }
     
     func requestAccessibilityPermissions() {
